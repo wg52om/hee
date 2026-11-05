@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>두 세계 퀘스트: 우주 탐험</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Orbitron:wght@700;900&family=Jua&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f0fa;--card:#fff;--ink:#1b1a33;--sub:#5d5b7a;--v:#0a8f9c;--vb:#d6f3f5;--r:#c9701a;--rb:#fdebd3;--ok:#1f9d55;--no:#d7384a;--line:#d6d3ee;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14132b;--card:#1f1e3d;--ink:#f1f0ff;--sub:#a9a7cc;--v:#5ce1e6;--vb:#103a4c;--r:#ffb454;--rb:#4a3418;--ok:#4be08a;--no:#ff6b7d;--line:#3a3866}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',system-ui,sans-serif;line-height:1.6;min-height:100vh;-webkit-tap-highlight-color:transparent}
+main{max-width:520px;margin:0 auto;padding:16px 16px 40px}
+h1,h2{font-family:'Do Hyeon','Noto Sans KR',sans-serif;font-weight:400;margin:0 0 8px}
+h1{font-size:42px;line-height:1.15;margin-top:26px}
+h2{font-size:28px}
+p{margin:0 0 12px}.sub{color:var(--sub);font-size:14px}
+button,input{font:inherit}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;background:var(--ink);color:var(--bg);font-family:'Do Hyeon',sans-serif;font-size:20px;cursor:pointer;margin-top:12px}
+.btn:active{transform:scale(.98)}.btn:focus-visible,input:focus-visible,.cell:focus-visible,.card:focus-visible{outline:3px solid var(--v);outline-offset:2px}
+input{width:100%;padding:13px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font-size:18px}
+.q{display:flex;gap:12px;align-items:center;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;width:100%;text-align:left;color:var(--ink);cursor:pointer}
+.q .ic{font-size:30px}.q b{display:block;font-size:17px}
+.q.done{border-color:var(--ok)}.q .st{margin-left:auto;font-weight:700;font-size:14px;color:var(--sub)}.q.done .st{color:var(--ok)}
+.top{display:flex;justify-content:space-between;font-weight:700;margin-bottom:10px;font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.card{min-height:84px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-size:13px;line-height:1.35;padding:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center}
+.card.v{background:var(--vb);border-color:var(--v)}.card.r{background:var(--rb);border-color:var(--r)}
+.card.back{background:var(--ink);color:var(--bg);font-size:26px}
+.card.ok{opacity:.35;pointer-events:none}
+.cell{height:92px;border-radius:16px;border:2px solid var(--line);background:var(--card);font-size:15px;font-weight:700;color:var(--ink);cursor:pointer;padding:4px}
+.cell.bad{background:var(--vb);border-color:var(--no)}.cell.good{background:var(--rb);border-color:var(--ok)}
+.bar{height:8px;background:var(--line);border-radius:8px;margin-bottom:14px;overflow:hidden}.bar i{display:block;height:100%;background:var(--v);width:100%}
+.res{text-align:center;padding:18px;border:3px solid;border-radius:18px;margin:14px 0;background:var(--card)}
+.res.win{border-color:var(--ok)}.res.lose{border-color:var(--no)}
+.big{font-family:'Do Hyeon',sans-serif;font-size:36px}
+.ox{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.ox button{height:90px;font-family:'Do Hyeon',sans-serif;font-size:46px;border-radius:16px;border:3px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.fb{padding:12px;border-radius:12px;background:var(--card);border:2px solid var(--line);margin-top:12px}
+.stamp{border:5px double var(--ok);color:var(--ok);border-radius:18px;padding:16px;text-align:center;transform:rotate(-3deg);margin:20px 8px}
+.stamp .big{font-size:44px}
+.code{font-family:monospace;font-size:26px;letter-spacing:4px;font-weight:700}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* modern UI */
+:root{--bg:#f4f5ff;--card:#fff;--ink:#12122a;--sub:#6b6d8f;--v:#6366f1;--vb:#e8e9ff;--r:#d97706;--rb:#fff1d6;--ok:#10b981;--no:#f43f5e;--line:#e3e4f5;--g:linear-gradient(135deg,#6366f1,#ec4899)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0b1a;--card:#16162b;--ink:#f4f4ff;--sub:#9a9cc2;--v:#8b8dff;--vb:#23244f;--r:#ffb84d;--rb:#4a3513;--ok:#34d399;--no:#fb7185;--line:#2a2b4d}}
+body{background:radial-gradient(60% 40% at 90% -5%,color-mix(in srgb,#ec4899 22%,transparent),transparent),radial-gradient(60% 45% at -10% 10%,color-mix(in srgb,#6366f1 25%,transparent),transparent),var(--bg);background-attachment:fixed;letter-spacing:-.01em}
+h1,h2,.big,.btn,.ox button{font-family:'Noto Sans KR',system-ui,sans-serif;font-weight:900;letter-spacing:-.04em}
+h1{font-size:46px;line-height:1.12;background:var(--g);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+h2{font-size:26px}
+.btn{background:var(--g);color:#fff;border-radius:999px;font-size:17px;padding:16px;box-shadow:0 12px 28px -12px #6366f1;transition:transform .15s,box-shadow .15s}
+.btn:hover{box-shadow:0 16px 32px -12px #ec4899}
+input{border-radius:16px;border:1.5px solid var(--line);padding:15px 16px;font-size:17px;box-shadow:0 2px 0 var(--line)}
+input:focus{border-color:var(--v)}
+.q{background:color-mix(in srgb,var(--card) 82%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:24px;padding:16px;box-shadow:0 10px 30px -18px rgba(60,60,140,.5);transition:transform .15s,border-color .15s}
+.q:hover{transform:translateY(-2px);border-color:var(--v)}
+.q .ic{flex:none;width:54px;height:54px;display:grid;place-items:center;border-radius:18px;background:var(--vb);font-size:26px}
+.q b{font-size:17px;font-weight:700;letter-spacing:-.03em}
+.q .st{flex:none;padding:5px 12px;border-radius:999px;background:var(--vb);color:var(--v);font-size:12px;font-weight:700}
+.q.done{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--card))}
+.q.done .ic{background:var(--ok)}
+.q.done .st{background:var(--ok);color:#fff}
+.top{padding:10px 16px;border-radius:999px;background:color-mix(in srgb,var(--card) 82%,transparent);border:1px solid var(--line);font-size:15px}
+.bar{height:10px;border-radius:999px;background:var(--line)}
+.bar i{background:var(--g);border-radius:999px}
+.card{border-radius:20px;border:1px solid var(--line);box-shadow:0 8px 20px -14px rgba(60,60,140,.6);font-weight:500;transition:transform .15s}
+.card:active{transform:scale(.95)}
+.card.back{background:var(--g);color:#fff;border-color:transparent;font-weight:900}
+.card.v{background:var(--vb);border-color:var(--v)}
+.card.r{background:var(--rb);border-color:var(--r)}
+.cell{border-radius:22px;border:1px solid var(--line);box-shadow:0 8px 20px -14px rgba(60,60,140,.6);font-size:14px}
+.cell:active{transform:scale(.93)}
+.res{border-radius:28px;border-width:2px;box-shadow:0 20px 40px -24px rgba(60,60,140,.6)}
+.big{font-size:34px}
+.ox button{border-radius:26px;border:1px solid var(--line);box-shadow:0 10px 24px -16px rgba(60,60,140,.6);font-size:44px}
+.ox button:active{transform:scale(.95)}
+.fb{border-radius:22px;border:1px solid var(--line);padding:16px;box-shadow:0 10px 30px -22px rgba(60,60,140,.6)}
+.stamp{border:2px solid var(--ok);border-radius:30px;background:color-mix(in srgb,var(--ok) 12%,var(--card));transform:rotate(-2deg);box-shadow:0 24px 44px -26px var(--ok)}
+.stamp .big{background:var(--g);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:46px}
+.code{display:inline-block;margin-top:6px;padding:6px 18px;border-radius:999px;background:var(--ink);color:var(--bg);font-size:22px}
+/* space theme */
+:root{--bg:#050816;--card:#0d1230;--ink:#e8f0ff;--sub:#8fa3d6;--v:#22d3ee;--vb:#0c2a4a;--r:#ffb020;--rb:#3a2a0a;--ok:#39ff9a;--no:#ff4d6d;--line:#1f2a5c;--g:linear-gradient(135deg,#22d3ee,#818cf8);--glow:0 0 22px -8px #22d3ee;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#050816;--card:#0d1230;--ink:#e8f0ff;--sub:#8fa3d6;--v:#22d3ee;--vb:#0c2a4a;--r:#ffb020;--rb:#3a2a0a;--ok:#39ff9a;--no:#ff4d6d;--line:#1f2a5c}}
+body{background-color:var(--bg);background-image:radial-gradient(1.5px 1.5px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 90px 120px,#9ef,transparent),radial-gradient(1.5px 1.5px at 150px 60px,#fff,transparent),radial-gradient(1px 1px at 60px 170px,#fffc,transparent),radial-gradient(70% 40% at 100% 0%,rgba(139,92,246,.35),transparent),radial-gradient(60% 40% at 0% 25%,rgba(34,211,238,.18),transparent),radial-gradient(70% 35% at 50% 110%,rgba(236,72,153,.2),transparent);background-size:200px 200px,240px 240px,170px 170px,220px 220px,100% 100%,100% 100%,100% 100%;background-repeat:repeat,repeat,repeat,repeat,no-repeat,no-repeat,no-repeat;background-attachment:fixed}
+h1{background:linear-gradient(120deg,#22d3ee,#a78bfa 60%,#f0abfc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 0 18px rgba(34,211,238,.35))}
+.big,.code,.top,#tm{font-family:'Orbitron','Noto Sans KR',sans-serif}
+.btn{color:#031022;box-shadow:0 0 26px -6px #22d3ee}
+.btn:hover{box-shadow:0 0 34px -4px #818cf8}
+input{background:var(--card);color:var(--ink);border-color:var(--line)}
+input:focus{border-color:var(--v);box-shadow:var(--glow)}
+.q,.fb,.top{background:rgba(13,18,48,.72);border:1px solid rgba(34,211,238,.28);box-shadow:var(--glow),inset 0 1px 0 rgba(255,255,255,.05)}
+.q:hover{border-color:var(--v)}
+.q .ic{background:linear-gradient(135deg,rgba(34,211,238,.25),rgba(129,140,248,.25));box-shadow:inset 0 0 0 1px rgba(34,211,238,.4)}
+.q .st{background:rgba(34,211,238,.14);color:var(--v)}
+.q.done{border-color:var(--ok);background:rgba(57,255,154,.08);box-shadow:0 0 24px -8px var(--ok)}
+.q.done .ic{background:var(--ok);box-shadow:none}
+.q.done .st{background:var(--ok);color:#031022}
+.bar{background:#121a44}
+.bar i{background:linear-gradient(90deg,#22d3ee,#a78bfa);box-shadow:0 0 12px #22d3ee}
+.card,.cell,.ox button{background:var(--card);border:1px solid rgba(34,211,238,.28);box-shadow:var(--glow)}
+.card.back{background:linear-gradient(135deg,#0f3b6b,#3b2a8a);color:#9ef;border-color:rgba(34,211,238,.6);text-shadow:0 0 10px #22d3ee}
+.card.v{background:var(--vb);border-color:var(--v)}
+.card.r{background:var(--rb);border-color:var(--r);box-shadow:0 0 22px -8px var(--r)}
+.cell.bad{background:#2a0f2e;border-color:var(--no);box-shadow:0 0 22px -8px var(--no)}
+.cell.good{background:var(--rb);border-color:var(--ok);box-shadow:0 0 22px -8px var(--ok)}
+.res{background:rgba(13,18,48,.78)}
+.res.win{border-color:var(--ok);box-shadow:0 0 36px -12px var(--ok)}
+.res.lose{border-color:var(--no);box-shadow:0 0 36px -12px var(--no)}
+.stamp{border-color:var(--ok);background:rgba(57,255,154,.07);box-shadow:0 0 44px -14px var(--ok)}
+.stamp .big{background:linear-gradient(120deg,#39ff9a,#22d3ee);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:38px}
+.code{background:var(--ok);color:#031022;box-shadow:0 0 22px -4px var(--ok)}
+/* monster quest */
+#mb{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:50;width:48px;height:48px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:#2b2d42;color:#fff;font-size:22px;cursor:pointer;box-shadow:0 6px 18px -6px rgba(0,0,0,.5)}
+.mz{--sky:#bfe9ff;--sky2:#e8f8ff;--grass:#8fdc7a;--grass2:#6cc65f;--card:#fff;--ink:#2b2d42;--sub:#6a6d8a;--pink:#ff7aa8;--ok:#1fae6b;--no:#e5484d;--bg:#fffbe9;background:var(--bg);color:var(--ink);border:4px solid #2b2d42;border-radius:28px;font-family:'Jua','Noto Sans KR',sans-serif;font-size:17px;line-height:1.5;margin-top:10px;letter-spacing:0}
+.mz h2{font-family:'Jua','Noto Sans KR',sans-serif;font-weight:400;font-size:26px;letter-spacing:0;margin:0 0 6px}
+.mz p{margin:0 0 10px}.mz .sub{color:var(--sub);font-size:15px}
+@media (prefers-reduced-motion:reduce){.mz .mon,.mz .ball.on{animation:none}}
+.mz .zb,.mz .opt{font:inherit;cursor:pointer;display:block;width:100%;text-align:center;color:var(--ink);background:var(--card);border:3px solid var(--ink);border-radius:18px;padding:12px 14px;box-shadow:0 5px 0 var(--ink);margin:0 0 12px;transition:transform .08s,box-shadow .08s}
+.mz .zb:active,.mz .opt:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.mz .zb:focus-visible,.mz .opt:focus-visible,.mz input:focus-visible,.mz .slot:focus-visible{outline:4px solid var(--pink);outline-offset:2px}
+.mz .zb.main{background:var(--pink);color:#fff;font-size:21px;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.mz .opt{text-align:left;font-size:16px;line-height:1.4}
+.mz .opt[disabled]{opacity:.4;pointer-events:none;text-decoration:line-through}
+.mz input{font:inherit;width:100%;padding:12px 14px;border:3px solid var(--ink);border-radius:16px;background:var(--card);color:var(--ink);font-size:18px;margin-bottom:12px}
+.mz .zbar{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:3px solid var(--ink);border-radius:999px;padding:6px 16px;margin-bottom:12px;font-size:16px}
+.mz .goal{height:14px;border:3px solid var(--ink);border-radius:999px;background:var(--card);overflow:hidden;margin:0 0 14px}
+.mz .goal i{display:block;height:100%;background:linear-gradient(90deg,#ffd43b,var(--pink));width:0;transition:width .5s}
+.mz .dex{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mz .slot{font:inherit;color:var(--ink);cursor:pointer;background:var(--card);border:3px solid var(--ink);border-radius:20px;padding:8px 4px 10px;text-align:center;box-shadow:0 4px 0 var(--ink);font-size:15px}
+.mz .slot:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.mz .slot svg{width:100%;max-width:88px;height:auto;display:block;margin:0 auto}
+.mz .slot.unk svg{filter:brightness(0);opacity:.22}
+.mz .slot.fled svg{filter:grayscale(1);opacity:.6}
+.mz .slot.got{background:linear-gradient(#fff6c8,var(--card));pointer-events:none}
+.mz .slot small{display:block;font-size:12px;color:var(--sub)}
+.mz .field{position:relative;height:250px;border:3px solid var(--ink);border-radius:24px;overflow:hidden;background:linear-gradient(var(--sky),var(--sky2) 58%,var(--grass) 58%);margin-bottom:12px}
+.mz .field:after{content:"";position:absolute;left:-10%;right:-10%;bottom:-40px;height:110px;border-radius:50%;background:var(--grass2)}
+.mz .pad{position:absolute;left:50%;bottom:46px;width:190px;height:44px;margin-left:-95px;border-radius:50%;background:var(--grass2);border:3px solid rgba(0,0,0,.12);z-index:1}
+.mz .mon{position:absolute;left:50%;bottom:70px;width:150px;margin-left:-75px;z-index:2;animation:bob 1.8s ease-in-out infinite;transition:transform .5s,opacity .5s}
+.mz .mon svg{width:100%;display:block}
+.mz .mon.shake{animation:shake .5s}.mon.zip{transform:scale(0);opacity:0}
+.mz .plate{position:absolute;left:10px;top:10px;z-index:3;background:var(--card);border:3px solid var(--ink);border-radius:16px;padding:6px 12px;min-width:150px;font-size:15px}
+.mz .hp{height:10px;border:2px solid var(--ink);border-radius:9px;background:var(--bg);overflow:hidden;margin-top:3px}
+.mz .hp i{display:block;height:100%;width:100%;background:var(--ok);transition:width .8s}
+.mz .ball{position:absolute;left:50%;bottom:78px;margin-left:-32px;width:64px;height:64px;border-radius:50%;border:4px solid var(--ink);background:linear-gradient(#ff5d5d 0 45%,var(--ink) 45% 55%,#fff 55%);z-index:4;display:none}
+.mz .ball:after{content:"";position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px;border-radius:50%;background:#fff;border:4px solid var(--ink)}
+.mz .ball.on{display:block;animation:wig .7s 3}
+.mz .spark{position:absolute;inset:0;z-index:5;display:grid;place-items:center;font-size:56px;pointer-events:none}
+.mz .dlg{background:var(--card);border:3px solid var(--ink);border-radius:22px;padding:14px;box-shadow:0 5px 0 var(--ink)}
+.mz .dlg .tag{display:inline-block;background:var(--pink);color:#fff;border-radius:999px;padding:0 12px;font-size:14px;margin-bottom:6px}
+.mz .msg{padding:10px 12px;border-radius:14px;margin:0 0 12px;border:3px dashed var(--ink)}
+.mz .msg.good{border-color:var(--ok)}.msg.bad{border-color:var(--no)}
+.mz .cert{text-align:center;background:linear-gradient(#fff6c8,var(--card));border:4px solid var(--ink);border-radius:26px;padding:18px;box-shadow:0 6px 0 var(--ink);margin:14px 0}
+.mz .cert .zbig{font-size:38px;line-height:1.1;color:var(--pink)}
+.mz .zcode{display:inline-block;margin-top:8px;background:var(--ink);color:var(--bg);border-radius:999px;padding:4px 18px;font-size:24px;letter-spacing:4px}
+.mz .row{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:10px 0}.row svg{width:56px}
+@keyframes bob{50%{transform:translateY(-8px)}}
+@keyframes shake{25%{transform:translateX(-14px) rotate(-6deg)}75%{transform:translateX(14px) rotate(6deg)}}
+@keyframes wig{20%{transform:rotate(-28deg)}60%{transform:rotate(28deg)}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.chip{width:48px;height:48px;border-radius:16px;border:2px solid rgba(255,255,255,.2);background:rgba(13,18,48,.7);color:var(--ink);font-size:22px;cursor:pointer;display:grid;place-items:center}
+.chip.on{border-color:#fff;box-shadow:0 0 0 3px rgba(34,211,238,.6)}
+.world{position:relative;height:440px;border-radius:26px;overflow:hidden;border:1px solid rgba(34,211,238,.35);background-color:rgba(7,10,32,.9);background-image:radial-gradient(80% 50% at 50% 45%,rgba(34,211,238,.12),transparent),radial-gradient(1.5px 1.5px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 90px 120px,#9ef,transparent),radial-gradient(1.5px 1.5px at 150px 60px,#fff,transparent);background-size:100% 100%,200px 200px,240px 240px,170px 170px;cursor:pointer;touch-action:manipulation;margin-bottom:12px;box-shadow:0 0 30px -12px #22d3ee}
+.pl{position:absolute;border-radius:50%;box-shadow:inset -8px -8px 16px rgba(0,0,0,.4)}
+.al{position:absolute;transform:translate(-50%,-50%);width:92px;background:none;border:0;padding:0;cursor:pointer;animation:fl 3s ease-in-out infinite;z-index:2}
+.al:nth-of-type(2){animation-delay:-.8s}.al:nth-of-type(3){animation-delay:-1.6s}
+.al svg{width:100%;display:block;filter:drop-shadow(0 0 12px rgba(34,211,238,.5))}
+.al.ok svg{filter:drop-shadow(0 0 14px #39ff9a)}
+.nm{display:block;text-align:center;font-size:12px;font-weight:700;color:#fff;text-shadow:0 1px 4px #000;white-space:nowrap}
+.me{position:absolute;width:62px;transform:translate(-50%,-100%);z-index:5;pointer-events:none}
+.me .bd{transition:transform .15s}.me.walk .bd svg{animation:wk .3s infinite alternate}
+.me svg{display:block;width:100%}
+.portal{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:92px;height:92px;border-radius:50%;border:0;cursor:pointer;background:conic-gradient(#22d3ee,#a78bfa,#f0abfc,#22d3ee);box-shadow:0 0 44px #a78bfa;font-size:34px;animation:sp 4s linear infinite;z-index:3}
+.portal[hidden]{display:none}
+@keyframes fl{50%{transform:translate(-50%,-56%)}}
+@keyframes wk{to{transform:translateY(-6px)}}
+@keyframes sp{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.al,.portal,.me.walk .bd svg{animation:none}}
+/* v3 map + catch */
+.world{height:460px;background-image:radial-gradient(1.5px 1.5px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 90px 120px,#9ef,transparent);background-size:200px 200px,240px 240px}
+.map{position:absolute;left:0;top:0;width:1100px;height:980px;background-image:radial-gradient(320px 230px at 700px 150px,rgba(236,72,153,.28),transparent),radial-gradient(360px 260px at 120px 460px,rgba(99,102,241,.32),transparent),radial-gradient(340px 240px at 980px 820px,rgba(34,211,238,.22),transparent),radial-gradient(1.5px 1.5px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 90px 120px,#9ef,transparent),radial-gradient(1.5px 1.5px at 150px 60px,#fff,transparent);background-size:100% 100%,100% 100%,100% 100%,200px 200px,240px 240px,170px 170px;will-change:transform}
+.lanes{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.lanes path{fill:none;stroke:rgba(34,211,238,.45);stroke-width:3;stroke-dasharray:4 12;stroke-linecap:round}
+.ast{position:absolute;border-radius:45% 55% 50% 50%;background:radial-gradient(circle at 30% 30%,#9ca3af,#4b5563)}
+.stn{position:absolute;transform:translate(-50%,-50%);font-size:46px;line-height:1;text-align:center}
+.ufo{position:absolute;left:0;top:540px;font-size:30px;animation:cr 24s linear infinite}
+.comet{position:absolute;left:760px;top:40px;width:90px;height:4px;border-radius:4px;background:linear-gradient(90deg,transparent,#fff);animation:cm 6s linear infinite}
+.mini{position:absolute;right:8px;top:8px;width:92px;height:82px;border-radius:12px;background:rgba(7,10,32,.78);border:1px solid rgba(34,211,238,.5);z-index:8;pointer-events:none}
+.mini i{position:absolute;width:8px;height:8px;border-radius:50%;transform:translate(-50%,-50%)}
+@keyframes cr{from{transform:translateX(-40px)}to{transform:translateX(1140px)}}
+@keyframes cm{from{transform:rotate(30deg) translateX(-200px);opacity:0}20%{opacity:1}to{transform:rotate(30deg) translateX(400px);opacity:0}}
+.mz .hero{position:absolute;left:3%;bottom:28px;width:84px;z-index:4}
+.mz .hero svg{display:block;width:100%;overflow:visible}
+.mz .hero.thr{animation:thr .45s ease-out}
+.mz .hero.hop{animation:hop .45s ease-out 3}
+.mz .bub{position:absolute;left:5%;bottom:136px;z-index:6;background:#fff;color:#2b2d42;border:3px solid #2b2d42;border-radius:18px;padding:2px 14px;font-size:22px;opacity:0;transform:scale(.3);white-space:nowrap}
+.mz .bub:after{content:"잡았다!!"}
+.mz .bub.pop{animation:pop .5s ease-out forwards}
+.mz .spark{display:block;font-size:26px}
+.mz .spark i{position:absolute;left:50%;top:55%;font-style:normal;animation:burst 1.3s ease-out forwards}
+.mz .ball.fly{display:block;animation:fly .65s ease-out}
+@keyframes thr{40%{transform:translateX(26px) rotate(12deg)}}
+@keyframes hop{50%{transform:translateY(-26px)}}
+@keyframes pop{to{opacity:1;transform:scale(1)}}
+@keyframes burst{from{transform:translate(0,0) scale(.4);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(1.3) rotate(120deg);opacity:0}}
+@keyframes fly{from{transform:translate(-170px,40px) scale(.5) rotate(-120deg)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.ufo,.comet,.mz .hero.thr,.mz .hero.hop,.mz .spark i{animation:none}.mz .bub.pop{animation:none;opacity:1;transform:none}.mz .ball.fly{animation:none}}
+.al.lock svg{filter:grayscale(1) brightness(.55)}
+.al.fin:not(.lock):not(.ok) svg{filter:drop-shadow(0 0 18px #ff5d8f)}
+.al.fin .nm{color:#ffd43b}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+const app=document.getElementById('app');
+function makeMu(def){let ctx,mst,dl,nb,tm,mode=def,on=true,ok=false,run=false,n=0,nt=0;
+const SB=[55,43.65,65.41,49],SA=[[220,261.63,329.63,440],[174.61,220,261.63,349.23],[261.63,329.63,392,523.25],[196,246.94,293.66,392]];
+const SL=[[[0,880],[2,784],[4,659],[8,784],[10,880],[12,1046]],[[0,698],[2,880],[4,1046],[8,880],[10,698],[12,880]],[[0,1046],[2,988],[4,784],[8,659],[10,784],[12,1046]],[[0,784],[2,880],[4,988],[8,1174],[10,988],[12,784]]];
+const AB=[130.81,110,87.31,98],AM=[[523.25,659.25,783.99,1046.5],[440,523.25,659.25,880],[349.23,440,523.25,698.46],[392,493.88,587.33,783.99]];
+const AP=[[0,2],[2,1],[3,2],[4,3],[8,2],[10,1],[11,2],[12,0],[14,1]];
+function init(){if(ctx)return;ctx=new(window.AudioContext||window.webkitAudioContext)();mst=ctx.createGain();mst.gain.value=.55;mst.connect(ctx.destination);dl=ctx.createDelay(1);dl.delayTime.value=.36;const f=ctx.createGain();f.gain.value=.38;dl.connect(f);f.connect(dl);dl.connect(mst);nb=ctx.createBuffer(1,ctx.sampleRate*.3,ctx.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+function note(f,t,d,ty,v,w,at){const o=ctx.createOscillator(),g=ctx.createGain();o.type=ty;o.frequency.value=f;at=at||.008;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+at);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(mst);if(w)g.connect(dl);o.start(t);o.stop(t+d+.05)}
+function kick(t,v){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(45,t+.12);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+.2);o.connect(g);g.connect(mst);o.start(t);o.stop(t+.22)}
+function nz(t,d,v,hp){const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();s.buffer=nb;f.type='highpass';f.frequency.value=hp;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f);f.connect(g);g.connect(mst);s.start(t);s.stop(t+d+.02)}
+function step(t){const s=n%16,bar=Math.floor(n/16)%4,lp=Math.floor(n/64)%2;
+if(mode=='space'){
+if(s%4==0)kick(t,.55);if(s==4||s==12)nz(t,.13,.14,1500);if(s%2==1)nz(t,.04,.05,7000);
+if([0,3,6,8,10,12,14].includes(s))note(SB[bar]*(s==6||s==14?2:1),t,.2,'sawtooth',.06);
+note(SA[bar][[0,1,2,3,2,1,2,3][s%8]]*2,t,.14,'sawtooth',.02,1);
+if(s==0)SA[bar].forEach(f=>note(f,t,1.9,'triangle',.03,1,.4));
+if(lp)SL[bar].forEach(([k,f])=>{if(k==s)note(f,t,.22,'square',.03,1)})}
+else{
+if(s==0||s==8)kick(t,.4);if(s==4||s==12)nz(t,.1,.1,1800);if(s%2==0)nz(t,.03,.04,8000);
+if(s%4==0)note(AB[bar],t,.16,'triangle',.11);if(s%4==2)note(AB[bar]*2,t,.1,'triangle',.08);
+AP.forEach(([k,i])=>{if(k==s)note(AM[bar][lp?(i+1)%4:i],t,.1,'square',.03)});
+if(s==14)note(AM[bar][3]*2,t,.14,'sine',.035)}}
+function loop(){if(!on||!ok)return;run=true;const L=mode=='space'?.118:.1;if(nt<ctx.currentTime)nt=ctx.currentTime+.06;while(nt<ctx.currentTime+.3){step(nt);nt+=L;n++}tm=setTimeout(loop,60)}
+const btn=document.createElement('button');btn.id='mb';btn.textContent='🔊';btn.setAttribute('aria-label','배경음악 켜기/끄기');document.body.appendChild(btn);
+btn.onclick=()=>{on=!on;btn.textContent=on?'🔊':'🔇';clearTimeout(tm);run=false;if(on&&ok){init();ctx.resume();nt=0;loop()}};
+addEventListener('pointerdown',()=>{if(ok)return;ok=true;init();ctx.resume();if(on&&!run)loop()},{once:true});
+document.addEventListener('visibilitychange',()=>{if(!ctx)return;document.hidden?ctx.suspend():(on&&ctx.resume())});
+return{mode(k){if(k==mode)return;mode=k;n=0;nt=0;if(on&&ok){clearTimeout(tm);loop()}}}}
+const Mu=makeMu('space');
+let name='',done={m:false,w:false,o:false,c:false},sc={m:0,w:0,o:0,c:0},timer=null;
+const $=s=>document.querySelector(s);
+function stop(){clearInterval(timer);clearTimeout(timer)}
+
+function title(){stop();app.className='';app.innerHTML=`<h1>두 세계 퀘스트</h1>
+<p class="sub">가상 세계에서 한 행동은 현실에서 어떤 결과로 돌아올까? 우주를 돌아다니며 외계인 3명의 퀘스트를 깨면 마지막 몬스터 스테이지가 열려요. 최종 스테이지까지 클리어하면 우주 여행 완성! 이번 판의 길잡이는 두 고전, 장자와 닐 스티븐슨의 『스노 크래시』예요.</p><p class="sub">🔊 배경음악이 나와요. 오른쪽 아래 버튼으로 끌 수 있어요.</p>
+<p><b>이름 또는 학번</b></p><input id="nm" maxlength="12" placeholder="예: 2학년 3반 김하늘" autocomplete="off">
+<button class="btn" id="st">🚀 발사!</button>`;
+$('#st').onclick=()=>{name=$('#nm').value.trim();if(!name){$('#nm').focus();$('#nm').placeholder='이름을 먼저 입력하세요';return}maker()}}
+
+
+/* ===== World ===== */
+const AC=['#ff9aa2','#ffd166','#7bdff2','#b9f3c1','#c3aed6','#ffc8dd'],FC=['😊','😆','😉'],XC=['—','👑','📡','🎧','🎀'];
+let av={c:0,f:0,x:0,px:520,py:900};
+function avSVG(a,pose){const c=AC[a.c],ar='fill="#eef2ff" stroke="#8ea0e6" stroke-width="2.5"';
+const arms=pose=='ball'?`<ellipse cx="34" cy="100" rx="6" ry="11" ${ar}/><ellipse cx="92" cy="84" rx="6" ry="13" transform="rotate(30 92 84)" ${ar}/><g transform="translate(104,62)"><circle r="11" fill="#fff" stroke="#2b2d42" stroke-width="2.5"/><path d="M-11 0a11 11 0 0122 0z" fill="#ff5d5d" stroke="#2b2d42" stroke-width="2.5"/><circle r="3.5" fill="#fff" stroke="#2b2d42" stroke-width="2"/></g>`:`<ellipse cx="34" cy="100" rx="6" ry="11" ${ar}/><ellipse cx="86" cy="100" rx="6" ry="11" ${ar}/>`;
+const eyes=a.f==2?`<circle cx="46" cy="56" r="5" fill="#222"/><path d="M68 56h12" stroke="#222" stroke-width="3.5" stroke-linecap="round"/>`:a.f==1?`<path d="M40 58q6-9 12 0M68 58q6-9 12 0" stroke="#222" stroke-width="3.5" fill="none" stroke-linecap="round"/>`:`<circle cx="48" cy="56" r="5" fill="#222"/><circle cx="72" cy="56" r="5" fill="#222"/><circle cx="49.8" cy="54" r="1.8" fill="#fff"/><circle cx="73.8" cy="54" r="1.8" fill="#fff"/>`;
+const mouth=a.f==1?`<path d="M52 66q8 9 16 0z" fill="#c2415d"/>`:`<path d="M53 67q7 6 14 0" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+const acc=['',`<path d="M38 28l6-14 8 10 8-14 8 14 8-10 6 14z" fill="#ffd43b" stroke="#e0a100" stroke-width="2"/>`,`<path d="M60 22V8" stroke="#888" stroke-width="3"/><circle cx="60" cy="7" r="5" fill="#ff5d8f"/>`,`<path d="M27 54a33 33 0 0166 0" stroke="#555" stroke-width="5" fill="none"/><rect x="21" y="50" width="10" height="18" rx="5" fill="#ff5d8f"/><rect x="89" y="50" width="10" height="18" rx="5" fill="#ff5d8f"/>`,`<path d="M60 26l-16-8v16zM60 26l16-8v16z" fill="#ff5d8f"/><circle cx="60" cy="26" r="4" fill="#ff9ec1"/>`][a.x];
+return `<svg viewBox="0 0 120 130" aria-hidden="true"><ellipse cx="60" cy="125" rx="26" ry="5" fill="rgba(0,0,0,.3)"/><ellipse cx="46" cy="121" rx="10" ry="5" fill="#8ea0e6"/><ellipse cx="74" cy="121" rx="10" ry="5" fill="#8ea0e6"/><rect x="40" y="86" width="40" height="32" rx="14" fill="#eef2ff" stroke="#8ea0e6" stroke-width="2.5"/><circle cx="60" cy="103" r="5" fill="#22d3ee"/><circle cx="60" cy="56" r="36" fill="${c}" stroke="rgba(0,0,0,.18)" stroke-width="2.5"/>${arms}${eyes}<circle cx="38" cy="67" r="5" fill="#ff7a9c" opacity=".6"/><circle cx="82" cy="67" r="5" fill="#ff7a9c" opacity=".6"/>${mouth}${acc}</svg>`}
+const AL=[
+{k:'m',n:'모모',c:'#86efac',p:['#bbf7d0','#16a34a'],x:230,y:230,w:108,s:200,q:'짝 맞추기',l:'안녕 지구인! 나는 기억 행성의 모모야. 가상 행동과 현실 결과의 짝을 맞춰 줄래?',d:'대단해! 기억력이 우주급이네!'},
+{k:'w',n:'쉴리',c:'#7dd3fc',p:['#bae6fd','#0369a1'],x:880,y:330,w:98,s:170,q:'접속 방어전',l:'삐빅! 접속 방어 타워 경비원 쉴리야. 몰려오는 악플과 사기를 같이 막아 줘!',d:'덕분에 타워가 안전해졌어. 고마워!'},
+{k:'o',n:'북미',c:'#d8b4fe',p:['#e9d5ff','#7e22ce'],x:150,y:600,w:116,s:225,q:'고전 O/X 퀴즈',l:'어서 와! 나는 고전 도서관 사서 북미야. 장자와 스노 크래시 문제, 풀 준비됐니?',d:'넌 진짜 책벌레 지구인이구나!'},
+{k:'c',n:'몬이',c:'#fda4af',p:['#fed7aa','#e11d48'],x:790,y:690,w:104,s:235,q:'최종 스테이지 시작!',l:'드디어 마지막 스테이지에 왔구나! 나는 풀숲 지기 몬이야. 접속몬스터를 4마리 이상 잡으면 우주 여행이 완성돼!',d:'몬스터 도감이 빛나고 있어! 최고야!'}];
+function alSVG(i){const c=AL[i].c,S='stroke="rgba(0,0,0,.2)" stroke-width="2.5"';
+const eye=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#fff"/><circle cx="${x}" cy="${y}" r="${r*.55}" fill="#222"/><circle cx="${x+r*.2}" cy="${y-r*.25}" r="${r*.22}" fill="#fff"/>`;
+const ch=(x,y)=>`<circle cx="${x}" cy="${y}" r="4.5" fill="#ff7a9c" opacity=".6"/>`;
+return `<svg viewBox="0 0 120 120" aria-hidden="true">`+[
+`<g stroke="${c}" stroke-width="9" fill="none" stroke-linecap="round"><path d="M32 70q-12 14-2 28"/><path d="M48 74q-6 16 2 30"/><path d="M72 74q6 16-2 30"/><path d="M88 70q12 14 2 28"/></g><path d="M60 8C96 8 106 44 98 70C90 80 30 80 22 70C14 44 24 8 60 8z" fill="${c}" ${S}/><circle cx="46" cy="22" r="5" fill="#fff" opacity=".5"/><circle cx="82" cy="30" r="4" fill="#fff" opacity=".5"/>${eye(38,48,9)}${eye(60,40,10)}${eye(82,48,9)}${ch(30,66)}${ch(90,66)}<path d="M52 66q8 7 16 0" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
+`<path d="M42 14Q34 0 24 6M78 14Q86 0 96 6" stroke="#555" stroke-width="3" fill="none"/><circle cx="24" cy="6" r="5" fill="#ff5d8f"/><circle cx="96" cy="6" r="5" fill="#fff59d"/><rect x="34" y="90" width="14" height="24" rx="7" fill="${c}" ${S}/><rect x="72" y="90" width="14" height="24" rx="7" fill="${c}" ${S}/><path d="M60 12C94 12 104 40 100 72C97 100 23 100 20 72C16 40 26 12 60 12z" fill="${c}" ${S}/><path d="M26 52Q60-18 94 52" fill="#fff" fill-opacity=".28" stroke="#fff" stroke-opacity=".7" stroke-width="3"/><circle cx="60" cy="58" r="20" fill="#fff"/><circle cx="60" cy="58" r="11" fill="#1d4ed8"/><circle cx="60" cy="58" r="5.5" fill="#111"/><circle cx="65" cy="52" r="3.5" fill="#fff"/>${ch(30,80)}${ch(90,80)}<path d="M52 86q8 6 16 0" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
+`<ellipse cx="60" cy="92" rx="54" ry="17" fill="#94a3b8" ${S}/><ellipse cx="60" cy="86" rx="40" ry="10" fill="#cbd5e1"/><circle cx="26" cy="96" r="4" fill="#fde047"/><circle cx="60" cy="102" r="4" fill="#f472b6"/><circle cx="94" cy="96" r="4" fill="#22d3ee"/><path d="M26 82C26 20 94 20 94 82z" fill="#bfeaff" fill-opacity=".45" stroke="#fff" stroke-opacity=".8" stroke-width="3"/><ellipse cx="60" cy="62" rx="24" ry="22" fill="${c}" ${S}/><path d="M46 42Q40 26 30 28M74 42Q80 26 90 28" stroke="${c}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="30" cy="28" r="4.5" fill="#fde047"/><circle cx="90" cy="28" r="4.5" fill="#fde047"/><circle cx="50" cy="62" r="8" fill="#fff" stroke="#7c3aed" stroke-width="3"/><circle cx="70" cy="62" r="8" fill="#fff" stroke="#7c3aed" stroke-width="3"/><path d="M58 62h4" stroke="#7c3aed" stroke-width="3"/><circle cx="50" cy="62" r="3.4" fill="#222"/><circle cx="70" cy="62" r="3.4" fill="#222"/><path d="M54 74q6 5 12 0" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
+`<path d="M96 88q20-6 14-26" stroke="${c}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M104 56l10 10-12 2z" fill="#ff5d8f"/><path d="M30 30L22 6l24 14zM90 30l8-24-24 14z" fill="#fde047" ${S}/><circle cx="60" cy="66" r="40" fill="${c}" ${S}/><ellipse cx="60" cy="84" rx="22" ry="14" fill="#fff" opacity=".4"/>${eye(44,58,10)}${eye(76,58,10)}${ch(30,76)}${ch(90,76)}<path d="M52 78q8 8 16 0z" fill="#c2415d"/><ellipse cx="42" cy="108" rx="11" ry="6" fill="${c}" ${S}/><ellipse cx="78" cy="108" rx="11" ry="6" fill="${c}" ${S}/>`][i]+`</svg>`}
+
+function maker(){stop();app.className='';
+app.innerHTML=`<h2>내 아바타 만들기</h2><p class="sub">가상 세계에서 나를 대신할 아바타를 꾸며요. 이 아바타로 우주를 돌아다니며 외계인을 만나요!</p><div id="pv" style="width:150px;margin:0 auto 12px"></div><p><b>몸 색</b></p><div class="chips" id="c1"></div><p><b>표정</b></p><div class="chips" id="c2"></div><p><b>소품</b></p><div class="chips" id="c3"></div><button class="btn" id="gox">🚀 우주로 출발!</button>`;
+const build=(id,arr,key,lab)=>{$(id).innerHTML=arr.map((t,i)=>`<button class="chip ${av[key]==i?'on':''}" data-i="${i}" aria-label="${lab} ${i+1}" ${key=='c'?`style="background:${AC[i]}"`:''}>${key=='c'?'':t}</button>`).join('');document.querySelectorAll(id+' .chip').forEach(b=>b.onclick=()=>{av[key]=+b.dataset.i;upd()})};
+function upd(){$('#pv').innerHTML=avSVG(av);build('#c1',AC,'c','몸 색');build('#c2',FC,'f','표정');build('#c3',XC,'x','소품')}
+upd();$('#gox').onclick=()=>{av.px=520;av.py=900;hub()}}
+
+const MW=1100,MH=980,PT={x:500,y:430},PO=78,ASTR=[[90,120,14],[400,90,10],[640,230,18],[980,120,12],[420,560,16],[700,560,11],[330,850,13],[1010,520,15],[600,780,9],[60,900,17],[940,900,12]];
+function hub(){stop();app.className='';Mu.mode('space');
+const nd=AL.filter(a=>done[a.k]).length,all=nd==4,lk=a=>a.k=='c'&&!(done.m&&done.w&&done.o),open3=done.m&&done.w&&done.o&&!done.c;
+app.innerHTML=`<div class="top"><span>🧑‍🚀 ${name}</span><span>클리어 ${nd}/4</span></div>
+<div class="world" id="wd"><div class="mini" aria-hidden="true">${AL.map(a=>`<i style="left:${a.x/MW*100}%;top:${a.y/MH*100}%;background:${done[a.k]?'#39ff9a':lk(a)?'#667':a.c}"></i>`).join('')}<i id="md" style="left:${av.px/MW*100}%;top:${av.py/MH*100}%;background:#fff;box-shadow:0 0 6px #fff;z-index:2"></i></div>
+<div class="map" id="map"><svg class="lanes" viewBox="0 0 ${MW} ${MH}" aria-hidden="true"><path d="M520 900Q300 900 150 730"/><path d="M150 730Q60 540 230 360"/><path d="M230 360Q360 330 500 430"/><path d="M500 430Q700 330 880 460"/><path d="M880 460Q960 640 790 820"/><path d="M790 820Q700 900 520 900"/><path d="M500 430Q480 650 520 900"/></svg>
+${ASTR.map(s=>`<i class="ast" style="left:${s[0]}px;top:${s[1]}px;width:${s[2]}px;height:${s[2]}px"></i>`).join('')}
+<span class="stn" style="left:520px;top:850px">🛰️<span class="nm">우주 정거장</span></span><span class="ufo" aria-hidden="true">🛸</span><i class="comet"></i>
+${AL.map(a=>`<i class="pl" style="left:${a.x-a.s/2}px;top:${a.y+30}px;width:${a.s}px;height:${a.s}px;background:radial-gradient(circle at 32% 28%,${a.p[0]},${a.p[1]});${lk(a)?'filter:grayscale(1) brightness(.5)':a.k=='c'&&!done.c?'box-shadow:0 0 70px #ff5d8f,inset -8px -8px 16px rgba(0,0,0,.4)':''}"></i>`).join('')}
+<button class="portal" id="pt" aria-label="포털" style="left:${PT.x}px;top:${PT.y}px" ${all?'':'hidden'}>🌀</button>
+${AL.map((a,i)=>`<button class="al ${done[a.k]?'ok':''} ${lk(a)?'lock':''} ${a.k=='c'?'fin':''}" data-i="${i}" style="left:${a.x}px;top:${a.y}px;width:${a.w}px" aria-label="${a.n} 만나기">${alSVG(i)}<span class="nm">${a.k=='c'?'👑 FINAL ':''}${a.n}${done[a.k]?' ✓':lk(a)?' 🔒':''}</span></button>`).join('')}
+<div class="me" id="me" style="left:${av.px}px;top:${av.py}px"><span class="nm">${name}</span><div class="bd" id="bd">${avSVG(av)}</div></div></div></div>
+<div class="fb" id="dlg">${open3?'🔓 최종 스테이지가 열렸어요! 오른쪽 아래 행성의 👑 몬이를 찾아가요. 미니맵의 분홍 점이에요.':all?'🌀 포털이 열렸어요! 우주 한가운데의 포털을 찾아가 터치해요. (오른쪽 위 작은 지도를 참고하세요)':'우주는 넓어요! 화면을 터치하면 아바타가 걸어가요. 작은 지도의 색깔 점이 외계인들이 있는 곳이에요. (PC는 방향키)'}</div>
+<button class="q" id="bf"><span class="ic">📖</span><span><b>고전 브리핑</b><span class="sub">장자와 스노 크래시, 먼저 읽고 가기</span></span></button>`;
+const W=$('#wd'),map=$('#map'),me=$('#me');let mt;
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+function setCam(x,y,d){const w=W.clientWidth,h=W.clientHeight;map.style.transition=d?`transform ${d}s linear`:'none';map.style.transform=`translate(${-cl(x-w/2,0,MW-w)}px,${-cl(y-h*.65,0,MH-h)}px)`}
+setCam(av.px,av.py,0);
+function cur(){const mr=map.getBoundingClientRect(),m=me.getBoundingClientRect();return{x:m.left+m.width/2-mr.left,y:m.bottom-mr.top}}
+function near(){const d=(x,y)=>Math.hypot(x-av.px,y-av.py);if(all&&d(PT.x,PT.y)<120)return 'p';return AL.findIndex(a=>!done[a.k]&&!lk(a)&&d(a.x,a.y)<140)}
+function go(x,y,cb){x=cl(x,40,MW-40);y=cl(y,80,MH-20);const p=cur(),d=Math.max(.15,Math.hypot(x-p.x,y-p.y)/170),tr=`left ${d}s linear,top ${d}s linear`;
+me.style.transition=tr;me.style.left=x+'px';me.style.top=y+'px';const md=$('#md');md.style.transition=tr;md.style.left=x/MW*100+'%';md.style.top=y/MH*100+'%';
+setCam(x,y,d);$('#bd').style.transform=`scaleX(${x<p.x-1?-1:1})`;me.classList.add('walk');av.px=x;av.py=y;clearTimeout(mt);
+mt=setTimeout(()=>{me.classList.remove('walk');if(cb)return cb();const n=near();if(n==='p')final();else if(n>=0)talk(n)},d*1000)}
+function talk(i){const a=AL[i],dl=$('#dlg');if(!dl)return;
+if(lk(a)){dl.innerHTML=`<b>🔒 ${a.n}</b><p style="margin:6px 0 0">최종 스테이지는 아직 닫혀 있어! 모모, 쉴리, 북미의 퀘스트를 먼저 깨고 오면 문이 열려.</p>`;return}
+dl.innerHTML=`<b>👽 ${a.n}</b><p style="margin:6px 0 10px">${done[a.k]?a.d:a.l}</p>`+(done[a.k]?'':`<button class="btn" id="yes" style="margin-top:0">${a.q} 도전하기!</button><button class="q" id="no" style="margin:10px 0 0;justify-content:center">조금 있다가</button>`);
+if(!done[a.k]){$('#yes').onclick=()=>({m:match,w:whack,o:quiz,c:zoo})[a.k]();$('#no').onclick=()=>{dl.textContent='언제든 다시 와도 좋아! 다른 별도 둘러봐요.'}}
+dl.scrollIntoView({block:'nearest',behavior:'smooth'})}
+map.onclick=e=>{const r=map.getBoundingClientRect();go(e.clientX-r.left,e.clientY-r.top)};
+document.querySelectorAll('.al').forEach(b=>b.onclick=e=>{e.stopPropagation();const i=+b.dataset.i,a=AL[i];go(a.x,a.y+PO,()=>talk(i))});
+$('#pt').onclick=e=>{e.stopPropagation();go(PT.x,PT.y+70,final)};
+$('#bf').onclick=brief;
+document.onkeydown=e=>{if(!$('#wd'))return;const k={ArrowLeft:[-70,0],ArrowRight:[70,0],ArrowUp:[0,-70],ArrowDown:[0,70]}[e.key];if(!k)return;e.preventDefault();go(av.px+k[0],av.py+k[1])}}
+
+function result(k,win,line,extra){stop();app.className='';if(win)done[k]=true;
+app.innerHTML=`<div class="res ${win?'win':'lose'}"><div class="big">${win?'QUEST CLEAR!':'아쉬워요, 실패'}</div><p>${line}</p></div>${extra||''}<button class="btn" id="b1">우주 월드로</button>${win?'':'<button class="btn" id="b2" style="background:var(--v);color:var(--bg)">다시 도전</button>'}`;
+$('#b1').onclick=hub;if(!win)$('#b2').onclick=({m:match,w:whack,o:quiz,c:zoo})[k]}
+
+function brief(){stop();app.innerHTML=`<h2>📖 고전 브리핑</h2>
+<div class="fb"><b>🦋 장자 「제물론」: 호접지몽</b><p style="margin-top:6px">장자가 나비가 되어 훨훨 나는 꿈을 꿉니다. 깨어난 뒤 그는 '내가 나비 꿈을 꾼 걸까, 나비가 지금 내 꿈을 꾸는 걸까?' 하고 묻습니다. 장자는 둘의 차이를 지우는 게 아니라, 한쪽만 진짜라고 우기는 마음에서 벗어나 서로 바뀌고 이어지는 모습(물화)을 보라고 해요.</p><p class="sub">→ 가상과 현실을 칼로 자르듯 나눌 수 있을까?</p></div>
+<div class="fb"><b>🌀 닐 스티븐슨 『스노 크래시』(1992)</b><p style="margin-top:6px">'메타버스'라는 말이 처음 등장한 SF 소설이에요. 현실에서는 좁은 보관 창고에 살며 피자를 배달하는 주인공 히로가, 가상 세계에서는 실력 있는 검객이자 해커로 살아갑니다. 그런데 가상에서 퍼지는 정보 바이러스 '스노 크래시'는 접속한 사람의 실제 뇌를 망가뜨려요.</p><p class="sub">→ 가상의 정보는 현실의 몸과 삶에 어떤 힘을 가질까? 가상은 현실에서 도망치는 곳일까?</p></div>
+<button class="btn" id="bk">우주 월드로</button>`;$('#bk').onclick=hub}
+/* Quest 1 */
+function match(){stop();
+const P=[['익명으로 악플 달기','상대방의 마음 상처, 처벌 가능'],['게임 아이템 사기 치기','실제 돈 피해 발생'],['SNS에 교복 사진 올리기','학교·개인정보 노출'],['장자의 호접지몽','꿈과 현실의 경계를 되묻는 이야기'],['스노 크래시의 정보 바이러스','가상에서 퍼져 현실의 뇌를 해침'],['스노 크래시의 메타버스','아바타로 활동하는 3차원 가상 사회']];
+let cards=[];P.forEach((p,i)=>{cards.push({t:p[0],s:'v',i});cards.push({t:p[1],s:'r',i})});
+cards.sort(()=>Math.random()-.5);
+let open=[],found=0,left=75,lock=false;
+app.innerHTML=`<div class="top"><span>🃏 짝 맞추기</span><span id="tm">75초</span></div><p class="sub">파란 카드(가상 행동)와 주황 카드(현실 결과)를 짝지으세요. 틀리면 다시 뒤집혀요.</p><div class="grid" id="g"></div>`;
+const g=$('#g');
+cards.forEach((c,n)=>{const b=document.createElement('button');b.className='card back';b.textContent='?';
+b.onclick=()=>{if(lock||open.includes(n)||b.classList.contains('ok'))return;b.className='card '+c.s;b.textContent=c.t;open.push(n);
+if(open.length==2){const [a,z]=open.map(x=>cards[x]);const A=g.children[open[0]],Z=g.children[open[1]];
+if(a.i==z.i&&a.s!=z.s){A.classList.add('ok');Z.classList.add('ok');open=[];found++;if(found==6){sc.m=left;result('m',true,`남은 시간 ${left}초로 완료! 가상 행동에는 늘 현실 결과가 따라붙어요.`)}}
+else{lock=true;setTimeout(()=>{[A,Z].forEach(e=>{e.className='card back';e.textContent='?'});open=[];lock=false},800)}}};g.appendChild(b)});
+timer=setInterval(()=>{left--;$('#tm').textContent=left+'초';if(left<=0)result('m',false,`시간 초과! 짝 ${found}/6개를 맞췄어요.`)},1000)}
+
+/* Quest 2 */
+function whack(){stop();
+const BAD=['😈 악플','🎣 피싱','🔓 정보유출','💸 사기'],GOOD=['💬 응원','🤝 도움','🛡️ 신고'];
+let score=0,left=40,cells=[];
+app.innerHTML=`<div class="top"><span>🛡️ 점수 <b id="sc">0</b> / 150</span><span id="tm">40초</span></div><div class="bar"><i id="pb"></i></div><p class="sub">스노 크래시 바이러스처럼 퍼지는 파란 위협(악플·피싱·정보유출·사기) +10점, 주황 응원은 건드리면 -15점!</p><div class="grid" id="g"></div>`;
+const g=$('#g');
+for(let n=0;n<9;n++){const b=document.createElement('button');b.className='cell';b.onclick=()=>{if(!b.dataset.k)return;const bad=b.dataset.k=='b';score+=bad?10:-15;if(score<0)score=0;$('#sc').textContent=score;clearCell(b)};g.appendChild(b);cells.push(b)}
+function clearCell(b){b.className='cell';b.textContent='';delete b.dataset.k}
+let tick=0;
+timer=setInterval(()=>{tick++;
+if(tick%10==0){left--;$('#tm').textContent=left+'초';$('#pb').style.width=(left/40*100)+'%';if(left<=0){sc.w=score;result('w',score>=150,`최종 점수 ${score}점 (기준 150점)`+(score>=150?' 가상 세계의 위협도 현실의 나를 지키는 힘으로 막아냈어요!':''));return}}
+if(tick%6==0){const e=cells.filter(c=>!c.dataset.k);if(!e.length)return;const c=e[Math.floor(Math.random()*e.length)];const bad=Math.random()<.65;
+c.dataset.k=bad?'b':'g';c.className='cell '+(bad?'bad':'good');c.textContent=(bad?BAD:GOOD)[Math.floor(Math.random()*(bad?4:3))];
+setTimeout(()=>{if(c.dataset.k)clearCell(c)},1300)}},100)}
+
+/* Quest 3 */
+function quiz(){stop();
+const Q=[['장자의 호접지몽은 "지금 내가 현실이라 믿는 경험도 확신하기 어렵다"는 물음을 던지는 이야기로 읽을 수 있다.',true,'장자는 꿈과 깸을 단단히 나누는 태도 자체를 흔들어요.'],['"메타버스"라는 말은 소설 『스노 크래시』에서 처음 등장했다.',true,'1992년 닐 스티븐슨이 가상 사회를 그리며 이 말을 썼어요.'],['『스노 크래시』에서 가상 세계의 바이러스는 가상에만 머물러 접속자의 현실 몸에는 영향이 없다.',false,'정보 바이러스가 접속한 사람의 실제 뇌를 망가뜨리는 것이 소설의 핵심 설정이에요.'],['장자의 입장에서는 꿈과 현실을 완전히 둘로 나누고 한쪽만 진짜라고 믿는 것이 가장 지혜롭다.',false,'장자는 이런 구분에 대한 집착에서 벗어나 변화(물화)의 흐름을 보라고 해요.'],['아바타에게 한 행동은 그 뒤에 있는 실제 사람에게는 영향을 주지 않는다.',false,'아바타 뒤에는 실제 사람이 있어요. 말과 행동은 마음에 닿아요.']];
+let n=0,ok=0;
+function show(){const q=Q[n];app.innerHTML=`<div class="top"><span>⚡ 문제 ${n+1}/5</span><span>정답 ${ok}개</span></div><h2 style="font-size:24px;line-height:1.4">${q[0]}</h2><div class="ox"><button data-a="1" style="color:var(--ok)">O</button><button data-a="0" style="color:var(--no)">X</button></div>`;
+document.querySelectorAll('.ox button').forEach(b=>b.onclick=()=>{const right=(b.dataset.a=='1')==q[1];if(right)ok++;
+app.innerHTML=`<div class="top"><span>⚡ 문제 ${n+1}/5</span><span>정답 ${ok}개</span></div><h2 style="font-size:24px;color:var(--${right?'ok':'no'})">${right?'정답!':'오답'}</h2><div class="fb">${q[2]}</div><button class="btn" id="nx">${n<4?'다음 문제':'결과 보기'}</button>`;
+$('#nx').onclick=()=>{n++;if(n<5)show();else{sc.o=ok;result('o',ok>=4,`${ok}/5 정답 (기준 4개)`)}}})}
+show()}
+
+const GOAL=4;
+const M=[
+{n:'나비몽',t:'호접지몽 몬스터',c:'#f9a8d4',lv:7,b:`<ellipse cx="20" cy="50" rx="20" ry="26" fill="#c084fc" transform="rotate(-20 20 50)"/><ellipse cx="100" cy="50" rx="20" ry="26" fill="#c084fc" transform="rotate(20 100 50)"/>`,a:`<path d="M48 36Q42 18 34 14M72 36Q78 18 86 14" stroke="#7c3aed" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="34" cy="14" r="4" fill="#7c3aed"/><circle cx="86" cy="14" r="4" fill="#7c3aed"/>`,
+ q:'야생의 나비몽이 나타났다! 장자는 나비가 되는 꿈을 꾸고 깨어나 "내가 나비 꿈을 꾼 걸까, 나비가 내 꿈을 꾸는 걸까?" 하고 물었다. 이 이야기가 생각하게 하는 것은?',
+ o:['꿈과 현실의 경계가 생각만큼 분명한지 되묻게 한다','꿈은 쓸모가 없으니 현실만 중요하다는 뜻이다','나비가 사람보다 훌륭하다는 뜻이다'],
+ h:'장자는 둘 중 한쪽을 정답으로 못 박으려는 게 아니에요.',e:'호접지몽은 꿈과 현실을 칼로 자르듯 나누는 생각을 흔들어요. 서로 바뀌고 이어지는 모습(물화)을 보라는 이야기예요.'},
+{n:'스노크',t:'메타버스 몬스터',c:'#a5d8ff',lv:9,b:'',a:`<path d="M60 12v24M48 18l24 12M72 18L48 30" stroke="#4f8ef7" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="12" r="4" fill="#fff" stroke="#4f8ef7" stroke-width="2"/>`,
+ q:'스노크가 나타났다! 아바타로 활동하는 가상 사회를 부르는 "메타버스"라는 말이 처음 등장한 소설은 무엇일까?',
+ o:['닐 스티븐슨의 『스노 크래시』','어니스트 클라인의 『레디 플레이어 원』','조지 오웰의 『1984』'],
+ h:'1992년에 나온 SF 소설이에요. 이 몬스터의 이름에 힌트가 있어요!',e:'1992년 『스노 크래시』에서 "메타버스"라는 말이 처음 쓰였고, 현실에선 평범한 히로가 가상에선 영웅이 되는 세계가 그려져요.'},
+{n:'아바톤',t:'아바타 몬스터',c:'#5eead4',lv:6,b:'',a:`<path d="M60 2l10 14-10 14-10-14z" fill="#34d399" stroke="#059669" stroke-width="2"/>`,
+ q:'아바톤이 나타났다! 게임 속에서 내 아바타에게 상처 주는 말을 했다. 그 말은 누구에게 닿을까?',
+ o:['아바타를 조종하는 실제 사람의 마음에 닿는다','그림 캐릭터라서 아무에게도 닿지 않는다','게임 회사 컴퓨터에만 기록되고 끝난다'],
+ h:'아바타를 움직이는 사람이 화면 뒤에 있어요.',e:'아바타는 가상이지만 그 뒤의 사람은 현실이에요. 가상에서 한 말도 현실의 마음에 닿아요.'},
+{n:'악플몽',t:'익명 몬스터',c:'#a78bfa',lv:11,b:'',a:`<path d="M32 42l-6-20 18 12zM88 42l6-20-18 12z" fill="#6d28d9"/><path d="M36 52l14 5M84 52l-14 5" stroke="#222" stroke-width="3" stroke-linecap="round"/>`,
+ q:'악플몽이 나타났다! 익명 계정으로 같은 반 친구를 공개적으로 비방했다. 현실에서 책임을 질 수 있을까?',
+ o:['그렇다. 온라인 비방도 현실의 법과 학교 규칙의 대상이 될 수 있다','아니다. 익명이면 어떤 경우에도 책임이 없다','아니다. 학교 밖 인터넷에는 법이 적용되지 않는다'],
+ h:'익명이라고 해서 늘 추적할 수 없는 건 아니에요.',e:'온라인에서의 비방도 현실의 명예훼손이 될 수 있어요. 익명이어도 상대의 상처는 진짜예요.'},
+{n:'피싱이',t:'가짜 링크 몬스터',c:'#fdba74',lv:10,b:`<path d="M24 66L8 52v30zM96 66l16-14v30z" fill="#fb923c"/>`,a:`<path d="M60 36Q60 8 82 10" stroke="#9a3412" stroke-width="3" fill="none"/><path d="M82 10v10q0 8-7 6" stroke="#9a3412" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+ q:'피싱이가 나타났다! 친구 계정이 "이 링크 누르면 아이템 공짜!" 하고 수상한 링크를 보냈다. 스노 크래시의 바이러스처럼 가상의 정보도 현실에 피해를 줄 수 있다. 어떻게 할까?',
+ o:['링크를 누르지 않고 친구에게 따로 확인한 뒤 신고한다','일단 눌러 보고 이상하면 지운다','다른 친구들에게도 똑같이 전달해 준다'],
+ h:'미끼를 덥석 물면 안 돼요!',e:'『스노 크래시』의 바이러스는 가상에서 퍼져 현실의 사람을 해쳐요. 수상한 링크는 누르지 말고 확인하고 신고해요.'},
+{n:'메타봉',t:'현실 도피 몬스터',c:'#818cf8',lv:12,vr:1,b:`<ellipse cx="60" cy="70" rx="56" ry="12" fill="none" stroke="#fde68a" stroke-width="4" transform="rotate(-15 60 70)"/>`,a:`<circle cx="22" cy="24" r="3" fill="#fde68a"/><circle cx="100" cy="30" r="2.5" fill="#fde68a"/><circle cx="90" cy="12" r="2" fill="#fff"/>`,
+ q:'메타봉이 나타났다! 현실이 힘들어서 가상 세계에서만 지내려는 사람이 늘고 있다. 『스노 크래시』의 시각으로 가장 알맞은 생각은?',
+ o:['가상이 현실의 어려움을 가려 주는 도피처가 될 수 있으니 현실 문제도 함께 돌아봐야 한다','가상이 즐거우면 현실은 신경 쓰지 않아도 된다','가상은 현실과 전혀 무관해서 걱정할 필요가 없다'],
+ h:'소설 속 히로는 현실과 가상에서의 모습이 전혀 달라요.',e:'『스노 크래시』는 가상의 화려함 뒤에 있는 현실의 결핍도 함께 보여 줘요. 가상을 즐기는 만큼 현실도 돌봐야 해요.'}
+];
+function mon(i){const m=M[i],eye=m.vr?'#7df9ff':'#222';
+return `<svg viewBox="0 0 120 120" aria-hidden="true">${m.b}<ellipse cx="38" cy="104" rx="12" ry="7" fill="${m.c}" stroke="rgba(0,0,0,.15)" stroke-width="2"/><ellipse cx="82" cy="104" rx="12" ry="7" fill="${m.c}" stroke="rgba(0,0,0,.15)" stroke-width="2"/><ellipse cx="60" cy="68" rx="40" ry="35" fill="${m.c}" stroke="rgba(0,0,0,.15)" stroke-width="2"/><ellipse cx="60" cy="80" rx="24" ry="18" fill="#fff" opacity=".45"/>${m.vr?'<rect x="30" y="52" width="60" height="24" rx="12" fill="#1e1b4b"/>':''}<circle cx="46" cy="64" r="7" fill="${eye}"/><circle cx="74" cy="64" r="7" fill="${eye}"/><circle cx="48.5" cy="61" r="2.6" fill="#fff"/><circle cx="76.5" cy="61" r="2.6" fill="#fff"/><circle cx="33" cy="80" r="5" fill="#ff8fab" opacity=".75"/><circle cx="87" cy="80" r="5" fill="#ff8fab" opacity=".75"/><path d="M53 80q7 7 14 0" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"/>${m.a}</svg>`}
+
+let zs=[],cur=-1,opts=[];
+const caught=()=>zs.filter(s=>s.r=='got').length;
+const stars=()=>zs.filter(s=>s.r=='got'&&s.star).length;
+
+function dex(){const c=caught(),done=zs.every(s=>s.r=='got'||s.r=='fled');
+app.innerHTML=`<div class="zbar"><span>🎒 ${name}</span><span>도감 ${c}/${M.length}</span></div><div class="goal" role="progressbar" aria-valuenow="${c}" aria-valuemax="${GOAL}"><i style="width:${Math.min(100,c/GOAL*100)}%"></i></div>
+<h2>🔥 FINAL STAGE: 풀숲의 접속몬스터</h2><p class="sub">목표: ${GOAL}마리 이상 잡기. 놓친 몬스터는 다시 도전할 수 있어요.</p>
+<div class="dex">${M.map((m,i)=>{const s=zs[i];return `<button class="slot ${s.r=='got'?'got':s.r=='fled'?'fled':'unk'}" data-i="${i}">${mon(i)}${s.r=='got'?m.n+(s.star?' ⭐':'')+'<small>잡았다!</small>':s.r=='fled'?m.n+'<small>다시 도전</small>':'???<small>야생</small>'}</button>`}).join('')}</div>
+${c>=GOAL?`<button class="zb main" id="fin" style="margin-top:16px">🏆 목표 달성! 결과 보기</button>`:done?`<p class="sub" style="margin-top:14px;text-align:center">아직 목표에 못 닿았어요. 도망친 몬스터에게 다시 도전해요!</p>`:''}`;
+document.querySelectorAll('.slot').forEach(b=>b.onclick=()=>battle(+b.dataset.i));if(c>=GOAL)$('#fin').onclick=zfinish;app.insertAdjacentHTML('beforeend','<button class="zb" id="ex" style="margin-top:14px">우주 월드로 나가기</button>');$('#ex').onclick=hub}
+
+function battle(i){cur=i;const m=M[i],s=zs[i];s.tries=0;
+opts=m.o.map((t,j)=>({t,ok:j==0})).sort(()=>Math.random()-.5);
+app.innerHTML=`<div class="zbar"><span>🔴 접속볼 <b id="bl">2</b>개</span><span>목표 ${caught()}/${GOAL}</span></div>
+<div class="field"><div class="plate"><b>${m.n}</b> Lv.${m.lv}<div class="hp"><i id="hp"></i></div></div><div class="pad"></div><div class="mon" id="mn">${mon(i)}</div><div class="ball" id="ball"></div><div class="spark" id="sp"></div><div class="hero" id="hero">${avSVG(av)}</div><div class="bub" id="bub"></div></div>
+<div class="dlg"><span class="tag">${m.t}</span><p>${m.q}</p><div id="msgbox"></div><div id="ops">${opts.map((o,k)=>`<button class="opt" data-k="${k}">${o.t}</button>`).join('')}</div></div>`;
+document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>ans(+b.dataset.k,b))}
+
+function ans(k,btn){const m=M[cur],s=zs[cur],o=opts[k];s.tries++;$('#bl').textContent=2-s.tries;
+if(o.ok){s.star=s.tries==1;lockOpts();$('#hp').style.width='0%';
+$('#msgbox').innerHTML=`<div class="msg good">접속볼을 던졌다!</div>`;
+const hero=$('#hero');hero.classList.add('thr');
+setTimeout(()=>{$('#ball').className='ball fly'},350);
+setTimeout(()=>{$('#mn').classList.add('zip');$('#ball').className='ball on'},1000);
+setTimeout(()=>{$('#ball').className='ball';hero.classList.remove('thr');hero.innerHTML=avSVG(av,'ball');hero.classList.add('hop');$('#bub').classList.add('pop');
+$('#sp').innerHTML=Array.from({length:18},(_,i)=>`<i style="--dx:${Math.round((Math.random()*2-1)*170)}px;--dy:${Math.round(-20-Math.random()*150)}px;animation-delay:${(Math.random()*.25).toFixed(2)}s">${['⭐','✨','🎉','💫','💖'][i%5]}</i>`).join('');s.r='got';
+$('#msgbox').innerHTML=`<div class="msg good"><b>${m.n}을(를) 잡았다!${s.star?' ⭐ 한 번에 성공!':''}</b><br>${m.e}</div><button class="zb main" id="nx">도감으로 돌아가기</button>`;$('#nx').onclick=dex},3200)}
+else if(s.tries==1){btn.disabled=true;$('#mn').classList.add('shake');setTimeout(()=>$('#mn').classList.remove('shake'),500);
+$('#msgbox').innerHTML=`<div class="msg bad">앗, 접속볼이 튕겨 나왔다! 한 번 더 도전할 수 있어요.<br>💡 힌트: ${m.h}</div>`}
+else{lockOpts();s.r='fled';$('#mn').style.transform='translateX(260px)';$('#mn').style.opacity=0;
+$('#msgbox').innerHTML=`<div class="msg bad"><b>${m.n}이(가) 도망쳤다…</b><br>${m.e}</div><button class="zb main" id="nx">도감으로 돌아가기</button>`;$('#nx').onclick=dex}}
+function lockOpts(){document.querySelectorAll('.opt').forEach(b=>b.disabled=true)}
+
+function zoo(){if(!zs.length)zs=M.map(()=>({r:'new',tries:0,star:false}));Mu.mode('adv');app.className='mz';dex()}
+function zfinish(){sc.c=caught();done.c=true;final()}
+/* Final */
+function final(){stop();app.className='';const t=sc.m+sc.w+sc.o*20+sc.c*20,d=new Date();
+const stamp=`${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+let h=7;for(const ch of name+stamp+t)h=(h*31+ch.charCodeAt(0))%1679616;
+const grade=t>=420?'S':t>=350?'A':'B';
+app.innerHTML=`<div class="stamp"><div style="width:96px;margin:-6px auto 4px">${avSVG(av)}</div><div class="big">ALL CLEAR</div><div style="font-weight:700;font-size:20px">${name}</div><div class="sub">${stamp}</div><div class="code">${h.toString(36).toUpperCase().padStart(4,'0')}</div></div>
+<div class="res win"><div class="big">등급 ${grade}</div><p>짝 맞추기 남은 시간 ${sc.m}초 · 방어전 ${sc.w}점 · 고전 퀴즈 ${sc.o}/5 · 몬스터 ${sc.c}/6마리</p></div>
+<div class="fb"><b>🦋 한 줄 생각 나누기</b><p style="margin:6px 0">① 호접지몽처럼, 내가 가상과 현실을 나누는 기준은 무엇인가?</p><p style="margin:6px 0">② 스노 크래시의 바이러스가 현실에서 일어난다면, 오늘 우리 일상의 무엇과 닮았을까?</p><p style="margin:6px 0">③ 내가 꾸민 아바타는 현실의 나와 얼마나 닮았을까? 왜 그렇게 꾸몄을까?</p></div>
+<p class="sub" style="text-align:center">이 화면을 선생님께 보여주면 보상을 받을 수 있어요. 가상에서 한 행동은 현실로 이어진다는 것, 기억하죠?</p>
+<button class="btn" id="re">처음부터 다시 하기</button>`;
+$('#re').onclick=()=>{done={m:false,w:false,o:false,c:false};sc={m:0,w:0,o:0,c:0};zs=[];title()}}
+title();
+</script>
+</body>
+</html>
