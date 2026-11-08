@@ -208,7 +208,15 @@ input:focus{border-color:var(--v);box-shadow:var(--glow)}
 .al.lock svg{filter:grayscale(1) brightness(.55)}
 .al.fin:not(.lock):not(.ok) svg{filter:drop-shadow(0 0 18px #ff5d8f)}
 .al.fin .nm{color:#ffd43b}
+.toast{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:60;background:#ffd43b;color:#2b2d42;font-weight:700;padding:10px 18px;border-radius:999px;box-shadow:0 10px 30px -8px rgba(0,0,0,.5);max-width:92vw;text-align:center}
+.me .em{position:absolute;left:50%;top:-34px;transform:translateX(-50%);font-size:28px;white-space:nowrap}
+.peer{width:54px;opacity:.95;z-index:4}.peer .nm{font-size:11px}
+.emo{display:flex;gap:8px;margin-bottom:12px}
+.emo button{flex:1;height:46px;border-radius:14px;font-size:22px;border:1px solid rgba(34,211,238,.4);background:rgba(13,18,48,.7);color:#fff;cursor:pointer}
+.emo button:active{transform:scale(.92)}
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
 <body>
 <main id="app"></main>
@@ -242,15 +250,56 @@ addEventListener('pointerdown',()=>{if(ok)return;ok=true;init();ctx.resume();if(
 document.addEventListener('visibilitychange',()=>{if(!ctx)return;document.hidden?ctx.suspend():(on&&ctx.resume())});
 return{mode(k){if(k==mode)return;mode=k;n=0;nt=0;if(on&&ok){clearTimeout(tm);loop()}}}}
 const Mu=makeMu('space');
+/* ===== 실시간(Firebase) : 아래 FB 안에 Firebase 설정을 붙여 넣으세요 ===== */
+const FB={
+apiKey:"AIzaSyBZMC4I9NcpM0v3mWY1u0Pj_Vg9edsIUSQ",
+authDomain:"heeee-50d7b.firebaseapp.com",
+databaseURL:"https://heeee-50d7b-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId:"heeee-50d7b",
+storageBucket:"heeee-50d7b.firebasestorage.app",
+messagingSenderId:"875312669889",
+appId:"1:875312669889:web:1738ed0224823e2124e040"};
+let live=false,watching=false,db=null,refP,refS,room='',P={},Sx={},me_id=Math.random().toString(36).slice(2,9),T0=Date.now(),myFt=0,seenFt=new Set(),firstS=true;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const MED=['🥇','🥈','🥉'];
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),4200)}
+function liveJoin(code,watch){code=(code||'class').replace(/[.$#\[\]\/\s]/g,'').slice(0,14)||'class';
+if(!window.firebase||!/^https:\/\/.+(firebaseio\.com|firebasedatabase\.app)/.test(FB.databaseURL||''))return;
+try{if(db&&code==room)return;if(refP){refP.off();refS.off()}
+const a0=firebase.apps.length?firebase.app():firebase.initializeApp(FB);db=firebase.database(a0);room=code;watching=!!watch;live=true;firstS=true;seenFt=new Set();
+refP=db.ref('rooms/'+code+'/p');refS=db.ref('rooms/'+code+'/s');
+if(!watch)refP.child(me_id).onDisconnect().remove();
+refP.on('value',s=>{P=s.val()||{};renderPeers();renderLB()});
+refS.on('value',s=>{Sx=s.val()||{};Object.entries(Sx).forEach(([id,p])=>{if(p&&p.ft&&!seenFt.has(id)){seenFt.add(id);if(!firstS&&id!=me_id)toast('🏆 '+p.n+'님이 최종 스테이지 클리어!')}});firstS=false;renderLB()})}catch(e){live=false}}
+function pushPos(mv){if(!live||watching)return;refP.child(me_id).update(Object.assign({n:name.slice(0,12),c:av.c,f:av.f,x:av.x,px:Math.round(av.px),py:Math.round(av.py)},mv||{})).catch(()=>{})}
+function score(){const st=zs.filter(s=>s.r=='got'&&s.star).length;return(done.m?100+sc.m*2:0)+(done.w?sc.w:0)+(done.o?sc.o*40:0)+(done.c?sc.c*50+st*25+Math.max(0,600-Math.round((Date.now()-T0)/1000)):0)}
+function pushScore(fin){if(!live||watching)return;const d={n:name.slice(0,12),sc:score(),cl:AL.filter(a=>done[a.k]).length};if(fin&&!myFt){myFt=1;d.ft=firebase.database.ServerValue.TIMESTAMP}refS.child(me_id).update(d).catch(()=>{})}
+function emote(e){pushPos({em:{e,k:Math.random().toString(36).slice(2,6)}});const m=$('#myem');if(m){m.textContent=e;setTimeout(()=>m.textContent='',2600)}}
+const emoHTML=()=>'<div class="emo" id="emo">'+['👋','🎉','😂','❤️','🔥'].map(e=>`<button aria-label="${e} 보내기">${e}</button>`).join('')+'</div>';
+function ranks(){return Object.entries(Sx).filter(([,p])=>p&&p.n).sort((a,b)=>(b[1].sc||0)-(a[1].sc||0)||(a[1].ft||9e15)-(b[1].ft||9e15))}
+function lbHTML(){if(!live)return '⚪ 서버가 연결되지 않아 혼자 플레이 중이에요.';
+const r=ranks(),n=Object.keys(P).length,mine=r.findIndex(x=>x[0]==me_id);
+return `<b>🏆 실시간 순위</b> <span class="sub">· 지금 접속 ${n}명</span>`+(r.length?r.slice(0,5).map((x,i)=>`<div style="display:flex;justify-content:space-between;gap:8px;margin-top:6px${x[0]==me_id?';color:var(--v);font-weight:700':''}"><span>${MED[i]||(i+1)+'.'} ${esc(x[1].n)}${x[1].ft?' ✅':''}</span><span>${x[1].cl||0}/4 · ${x[1].sc||0}점</span></div>`).join('')+(mine>4?`<div class="sub" style="margin-top:8px">내 순위: ${mine+1}위</div>`:''):'<div class="sub">아직 점수가 없어요. 퀘스트를 깨 보세요!</div>')}
+function tbHTML(){const r=ranks(),n=Object.keys(P).length;return `<p style="font-size:20px"><b>접속 ${n}명 · 최종 클리어 ${r.filter(x=>x[1].ft).length}명</b></p>`+r.map((x,i)=>`<div class="fb" style="margin-top:8px"><div style="display:flex;justify-content:space-between;font-size:18px"><span>${MED[i]||(i+1)+'.'} <b>${esc(x[1].n)}</b>${x[1].ft?' ✅':''}</span><span>${x[1].sc||0}점</span></div><div class="bar" style="margin:8px 0 0"><i style="width:${(x[1].cl||0)*25}%"></i></div></div>`).join('')}
+function renderLB(){const a=$('#lb');if(a)a.innerHTML=lbHTML();const t=$('#tb');if(t)t.innerHTML=tbHTML()}
+function renderPeers(){const map=$('#map');if(!map)return;const ids=new Set();
+Object.entries(P).forEach(([id,p])=>{if(id==me_id||!p||!p.n)return;ids.add(id);let el=document.getElementById('pr'+id);const at=p.px+','+p.py,dd=p.d||.6;
+if(!el){el=document.createElement('div');el.id='pr'+id;el.className='me peer';el.innerHTML=`<span class="nm"></span><div class="bd">${avSVG(p)}</div><i class="em"></i>`;el.querySelector('.nm').textContent=p.n;el.style.left=p.px+'px';el.style.top=p.py+'px';el.dataset.at=at;el.dataset.k=p.em?p.em.k:'';map.appendChild(el)}
+else{if(el.dataset.at!=at){el.dataset.at=at;el.style.transition=`left ${dd}s linear,top ${dd}s linear`;el.style.left=p.px+'px';el.style.top=p.py+'px';el.classList.add('walk');setTimeout(()=>el.classList.remove('walk'),dd*1000)}
+if(p.em&&el.dataset.k!=p.em.k){el.dataset.k=p.em.k;const e=el.querySelector('.em');e.textContent=p.em.e;setTimeout(()=>e.textContent='',2600)}}});
+map.querySelectorAll('.peer').forEach(el=>{if(!ids.has(el.id.slice(2)))el.remove()})}
+function teacher(){app.innerHTML=`<h2>👩‍🏫 교사용 현황판</h2><p class="sub">학생들이 입력한 학급 코드를 넣고 '현황 보기'를 누르세요. 교실 화면에 띄워 두면 실시간으로 바뀌어요.</p><input id="rm" maxlength="14" placeholder="학급 코드 (예: SPACE23)"><button class="btn" id="tg">현황 보기</button><div id="tb"></div>`;
+$('#tg').onclick=()=>{liveJoin(($('#rm').value||'').trim(),true);$('#tg').remove();$('#rm').disabled=true;if(!live)$('#tb').innerHTML='<div class="fb">Firebase 설정이 아직 연결되지 않았어요.</div>';renderLB()}}
+
 let name='',done={m:false,w:false,o:false,c:false},sc={m:0,w:0,o:0,c:0},timer=null;
 const $=s=>document.querySelector(s);
 function stop(){clearInterval(timer);clearTimeout(timer)}
 
 function title(){stop();app.className='';app.innerHTML=`<h1>두 세계 퀘스트</h1>
 <p class="sub">가상 세계에서 한 행동은 현실에서 어떤 결과로 돌아올까? 우주를 돌아다니며 외계인 3명의 퀘스트를 깨면 마지막 몬스터 스테이지가 열려요. 최종 스테이지까지 클리어하면 우주 여행 완성! 이번 판의 길잡이는 두 고전, 장자와 닐 스티븐슨의 『스노 크래시』예요.</p><p class="sub">🔊 배경음악이 나와요. 오른쪽 아래 버튼으로 끌 수 있어요.</p>
-<p><b>이름 또는 학번</b></p><input id="nm" maxlength="12" placeholder="예: 2학년 3반 김하늘" autocomplete="off">
+<p><b>닉네임</b> <span class="sub">(실명 대신 별명을 써요)</span></p><input id="nm" maxlength="12" placeholder="예: 별빛탐험가" autocomplete="off"><p><b>학급 코드</b> <span class="sub">(선생님이 알려 준 코드)</span></p><input id="rm" maxlength="14" placeholder="예: SPACE23" autocomplete="off">
 <button class="btn" id="st">🚀 발사!</button>`;
-$('#st').onclick=()=>{name=$('#nm').value.trim();if(!name){$('#nm').focus();$('#nm').placeholder='이름을 먼저 입력하세요';return}maker()}}
+$('#st').onclick=()=>{name=$('#nm').value.trim();if(!name){$('#nm').focus();$('#nm').placeholder='이름을 먼저 입력하세요';return}liveJoin(($('#rm').value||'').trim());maker()}}
 
 
 /* ===== World ===== */
@@ -283,7 +332,7 @@ function upd(){$('#pv').innerHTML=avSVG(av);build('#c1',AC,'c','몸 색');build(
 upd();$('#gox').onclick=()=>{av.px=520;av.py=900;hub()}}
 
 const MW=1100,MH=980,PT={x:500,y:430},PO=78,ASTR=[[90,120,14],[400,90,10],[640,230,18],[980,120,12],[420,560,16],[700,560,11],[330,850,13],[1010,520,15],[600,780,9],[60,900,17],[940,900,12]];
-function hub(){stop();app.className='';Mu.mode('space');
+function hub(){stop();app.className='';Mu.mode('space');setTimeout(()=>{pushScore();pushPos();renderPeers();renderLB();document.querySelectorAll('#emo button').forEach(b=>b.onclick=()=>emote(b.textContent.trim()))},0);
 const nd=AL.filter(a=>done[a.k]).length,all=nd==4,lk=a=>a.k=='c'&&!(done.m&&done.w&&done.o),open3=done.m&&done.w&&done.o&&!done.c;
 app.innerHTML=`<div class="top"><span>🧑‍🚀 ${name}</span><span>클리어 ${nd}/4</span></div>
 <div class="world" id="wd"><div class="mini" aria-hidden="true">${AL.map(a=>`<i style="left:${a.x/MW*100}%;top:${a.y/MH*100}%;background:${done[a.k]?'#39ff9a':lk(a)?'#667':a.c}"></i>`).join('')}<i id="md" style="left:${av.px/MW*100}%;top:${av.py/MH*100}%;background:#fff;box-shadow:0 0 6px #fff;z-index:2"></i></div>
@@ -293,9 +342,9 @@ ${ASTR.map(s=>`<i class="ast" style="left:${s[0]}px;top:${s[1]}px;width:${s[2]}p
 ${AL.map(a=>`<i class="pl" style="left:${a.x-a.s/2}px;top:${a.y+30}px;width:${a.s}px;height:${a.s}px;background:radial-gradient(circle at 32% 28%,${a.p[0]},${a.p[1]});${lk(a)?'filter:grayscale(1) brightness(.5)':a.k=='c'&&!done.c?'box-shadow:0 0 70px #ff5d8f,inset -8px -8px 16px rgba(0,0,0,.4)':''}"></i>`).join('')}
 <button class="portal" id="pt" aria-label="포털" style="left:${PT.x}px;top:${PT.y}px" ${all?'':'hidden'}>🌀</button>
 ${AL.map((a,i)=>`<button class="al ${done[a.k]?'ok':''} ${lk(a)?'lock':''} ${a.k=='c'?'fin':''}" data-i="${i}" style="left:${a.x}px;top:${a.y}px;width:${a.w}px" aria-label="${a.n} 만나기">${alSVG(i)}<span class="nm">${a.k=='c'?'👑 FINAL ':''}${a.n}${done[a.k]?' ✓':lk(a)?' 🔒':''}</span></button>`).join('')}
-<div class="me" id="me" style="left:${av.px}px;top:${av.py}px"><span class="nm">${name}</span><div class="bd" id="bd">${avSVG(av)}</div></div></div></div>
+<div class="me" id="me" style="left:${av.px}px;top:${av.py}px"><span class="nm">${name}</span><div class="bd" id="bd">${avSVG(av)}</div><i class="em" id="myem"></i></div></div></div>
 <div class="fb" id="dlg">${open3?'🔓 최종 스테이지가 열렸어요! 오른쪽 아래 행성의 👑 몬이를 찾아가요. 미니맵의 분홍 점이에요.':all?'🌀 포털이 열렸어요! 우주 한가운데의 포털을 찾아가 터치해요. (오른쪽 위 작은 지도를 참고하세요)':'우주는 넓어요! 화면을 터치하면 아바타가 걸어가요. 작은 지도의 색깔 점이 외계인들이 있는 곳이에요. (PC는 방향키)'}</div>
-<button class="q" id="bf"><span class="ic">📖</span><span><b>고전 브리핑</b><span class="sub">장자와 스노 크래시, 먼저 읽고 가기</span></span></button>`;
+${live?emoHTML():''}<div class="fb" id="lb">${lbHTML()}</div><button class="q" id="bf"><span class="ic">📖</span><span><b>고전 브리핑</b><span class="sub">장자와 스노 크래시, 먼저 읽고 가기</span></span></button>`;
 const W=$('#wd'),map=$('#map'),me=$('#me');let mt;
 const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
 function setCam(x,y,d){const w=W.clientWidth,h=W.clientHeight;map.style.transition=d?`transform ${d}s linear`:'none';map.style.transform=`translate(${-cl(x-w/2,0,MW-w)}px,${-cl(y-h*.65,0,MH-h)}px)`}
@@ -304,7 +353,7 @@ function cur(){const mr=map.getBoundingClientRect(),m=me.getBoundingClientRect()
 function near(){const d=(x,y)=>Math.hypot(x-av.px,y-av.py);if(all&&d(PT.x,PT.y)<120)return 'p';return AL.findIndex(a=>!done[a.k]&&!lk(a)&&d(a.x,a.y)<140)}
 function go(x,y,cb){x=cl(x,40,MW-40);y=cl(y,80,MH-20);const p=cur(),d=Math.max(.15,Math.hypot(x-p.x,y-p.y)/170),tr=`left ${d}s linear,top ${d}s linear`;
 me.style.transition=tr;me.style.left=x+'px';me.style.top=y+'px';const md=$('#md');md.style.transition=tr;md.style.left=x/MW*100+'%';md.style.top=y/MH*100+'%';
-setCam(x,y,d);$('#bd').style.transform=`scaleX(${x<p.x-1?-1:1})`;me.classList.add('walk');av.px=x;av.py=y;clearTimeout(mt);
+setCam(x,y,d);pushPos({px:Math.round(x),py:Math.round(y),d:+d.toFixed(2)});$('#bd').style.transform=`scaleX(${x<p.x-1?-1:1})`;me.classList.add('walk');av.px=x;av.py=y;clearTimeout(mt);
 mt=setTimeout(()=>{me.classList.remove('walk');if(cb)return cb();const n=near();if(n==='p')final();else if(n>=0)talk(n)},d*1000)}
 function talk(i){const a=AL[i],dl=$('#dlg');if(!dl)return;
 if(lk(a)){dl.innerHTML=`<b>🔒 ${a.n}</b><p style="margin:6px 0 0">최종 스테이지는 아직 닫혀 있어! 모모, 쉴리, 북미의 퀘스트를 먼저 깨고 오면 문이 열려.</p>`;return}
@@ -317,6 +366,7 @@ $('#pt').onclick=e=>{e.stopPropagation();go(PT.x,PT.y+70,final)};
 $('#bf').onclick=brief;
 document.onkeydown=e=>{if(!$('#wd'))return;const k={ArrowLeft:[-70,0],ArrowRight:[70,0],ArrowUp:[0,-70],ArrowDown:[0,70]}[e.key];if(!k)return;e.preventDefault();go(av.px+k[0],av.py+k[1])}}
 
+function final(){final0();pushScore(true);setTimeout(()=>{const i=ranks().filter(x=>x[1].ft).sort((a,b)=>a[1].ft-b[1].ft).findIndex(x=>x[0]==me_id);app.insertAdjacentHTML('beforeend',(live&&i>=0?`<div class="fb" style="margin-top:14px;text-align:center"><b>🏁 ${i+1}번째로 최종 클리어!</b></div>`:'')+`<div class="fb" id="lb" style="margin-top:14px">${lbHTML()}</div>`)},700)}
 function result(k,win,line,extra){stop();app.className='';if(win)done[k]=true;
 app.innerHTML=`<div class="res ${win?'win':'lose'}"><div class="big">${win?'QUEST CLEAR!':'아쉬워요, 실패'}</div><p>${line}</p></div>${extra||''}<button class="btn" id="b1">우주 월드로</button>${win?'':'<button class="btn" id="b2" style="background:var(--v);color:var(--bg)">다시 도전</button>'}`;
 $('#b1').onclick=hub;if(!win)$('#b2').onclick=({m:match,w:whack,o:quiz,c:zoo})[k]}
@@ -431,7 +481,7 @@ function lockOpts(){document.querySelectorAll('.opt').forEach(b=>b.disabled=true
 function zoo(){if(!zs.length)zs=M.map(()=>({r:'new',tries:0,star:false}));Mu.mode('adv');app.className='mz';dex()}
 function zfinish(){sc.c=caught();done.c=true;final()}
 /* Final */
-function final(){stop();app.className='';const t=sc.m+sc.w+sc.o*20+sc.c*20,d=new Date();
+function final0(){stop();app.className='';const t=sc.m+sc.w+sc.o*20+sc.c*20,d=new Date();
 const stamp=`${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 let h=7;for(const ch of name+stamp+t)h=(h*31+ch.charCodeAt(0))%1679616;
 const grade=t>=420?'S':t>=350?'A':'B';
@@ -441,7 +491,7 @@ app.innerHTML=`<div class="stamp"><div style="width:96px;margin:-6px auto 4px">$
 <p class="sub" style="text-align:center">이 화면을 선생님께 보여주면 보상을 받을 수 있어요. 가상에서 한 행동은 현실로 이어진다는 것, 기억하죠?</p>
 <button class="btn" id="re">처음부터 다시 하기</button>`;
 $('#re').onclick=()=>{done={m:false,w:false,o:false,c:false};sc={m:0,w:0,o:0,c:0};zs=[];title()}}
-title();
+if(location.hash=='#teacher')teacher();else title();
 </script>
 </body>
 </html>
